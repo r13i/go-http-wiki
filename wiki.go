@@ -36,7 +36,13 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/view/"):]
-	p, _ := loadPage(title)
+	p, err := loadPage(title)
+
+	// Redirect to create if page does not exist yet
+	if err != nil {
+		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
+		return
+	}
 
 	fmt.Println("Serving page:", title)
 
